@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}{{ current_user.name }} — Profile{% endblock %}
+
+{% block content %}
+<section id="profile" class="anim-fade space-y-8">
+
+  <!-- ======== PROFILE HEADER CARD ======== -->
+  <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+    <!-- Banner -->
+    <div class="h-32 bg-gradient-to-r from-tel-red-600 via-tel-red-700 to-tel-red-800 relative">
+      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA4KSIvPjwvc3ZnPg==')] opacity-60"></div>
+    </div>
+
+    <!-- Profile Info -->
+    <div class="px-6 pb-6 -mt-12 relative">
+      <div class="flex flex-col sm:flex-row items-start sm:items-end gap-5">
+        <!-- Avatar -->
+        <img src="{{ current_user.avatar_url }}" alt="{{ current_user.name }}"
+          class="w-24 h-24 rounded-2xl ring-4 ring-white shadow-lg bg-white" />
+
+        <div class="flex-1">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <h2 class="text-2xl font-extrabold text-slate-800">{{ current_user.name }}</h2>
+            {% if current_user.is_verified %}
+            <span class="inline-flex items-center gap-1 text-xs font-bold px-3 py-1 bg-green-50 text-green-600 rounded-full border border-green-100 w-fit">
+              <i data-lucide="badge-check" class="w-3.5 h-3.5"></i> Verified Student
+            </span>
+            {% endif %}
+          </div>
+          <p class="text-sm text-slate-500 mt-1 flex items-center gap-1.5">
+            <i data-lucide="graduation-cap" class="w-4 h-4 text-tel-red-500"></i>
+            {{ current_user.origin_university }} → {{ current_user.target_university }}
+          </p>
+          <p class="text-sm text-slate-500 mt-0.5 flex items-center gap-1.5">
+            <i data-lucide="book-open" class="w-4 h-4 text-tel-red-500"></i>
+            {{ current_user.major }} · {{ current_user.role }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== STATS ROW ======== -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="bg-white rounded-2xl border border-slate-100 p-4 text-center shadow-sm">
+      <p class="text-2xl font-extrabold text-tel-red-700">{{ current_user.match_profile.match_score }}%</p>
+      <p class="text-xs text-slate-500 mt-1">Profile Match</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-100 p-4 text-center shadow-sm">
+      <p class="text-2xl font-extrabold text-tel-red-700">{{ all_groups|length }}</p>
+      <p class="text-xs text-slate-500 mt-1">Groups Joined</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-100 p-4 text-center shadow-sm">
+      <p class="text-2xl font-extrabold text-tel-red-700">{{ user_housing|length }}</p>
+      <p class="text-xs text-slate-500 mt-1">Housing Listings</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-100 p-4 text-center shadow-sm">
+      <p class="text-2xl font-extrabold text-tel-red-700">{{ user_items|length }}</p>
+      <p class="text-xs text-slate-500 mt-1">Items for Sale</p>
+    </div>
+  </div>
+
+  <!-- ======== MATCH PROFILE DETAILS ======== -->
+  <div class="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+    <div class="flex items-center gap-2 mb-4">
+      <div class="w-7 h-7 rounded-lg bg-tel-red-100 flex items-center justify-center">
+        <i data-lucide="heart-handshake" class="w-4 h-4 text-tel-red-600"></i>
+      </div>
+      <h3 class="text-lg font-extrabold text-slate-800">Match Profile</h3>
+      <span class="text-xs text-slate-400 ml-1">(MatchProfile — Composition)</span>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+      <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
+        <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-1">Sleep Schedule</p>
+        <p class="text-sm font-semibold text-slate-700">{{ current_user.match_profile.sleep_schedule or '—' }}</p>
+      </div>
+      <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
+        <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-1">Study Habit</p>
+        <p class="text-sm font-semibold text-slate-700">{{ current_user.match_profile.study_habit or '—' }}</p>
+      </div>
+      <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
+        <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-1">Cleanliness</p>
+        <p class="text-sm font-semibold text-slate-700">{{ current_user.match_profile.cleanliness or '—' }}</p>
+      </div>
+    </div>
+
+    <!-- Lifestyle Tags -->
+    <div class="flex flex-wrap gap-2">
+      {% for tag in current_user.match_profile.tags %}
+      <span class="gs-tag text-xs font-semibold px-3 py-1.5 rounded-full {{ tag.color }} border">
+        {{ tag.emoji }} {{ tag.label }}
+      </span>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ======== GROUPS MEMBERSHIP ======== -->
+  <div class="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+    <div class="flex items-center gap-2 mb-4">
+      <div class="w-7 h-7 rounded-lg bg-tel-red-100 flex items-center justify-center">
+        <i data-lucide="users" class="w-4 h-4 text-tel-red-600"></i>
+      </div>
+      <h3 class="text-lg font-extrabold text-slate-800">Group Memberships</h3>
+      <span class="text-xs text-slate-400 ml-1">(ChatGroup — Composition)</span>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {% for g in all_groups %}
+      <a href="/messages" class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 hover:bg-tel-red-50 hover:border-tel-red-200 transition-all no-underline group cursor-pointer">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br {{ g.gradient }} flex items-center justify-center text-white font-bold text-xs shadow-sm flex-shrink-0">{{ g.initials }}</div>
+        <div class="flex-1 min-w-0">
+          <h4 class="font-bold text-sm text-slate-700 group-hover:text-tel-red-700 transition-colors">{{ g.group_name }}</h4>
+          <p class="text-xs text-slate-400 truncate">{{ g.members|length }} members · {{ g.message_count }} messages</p>
+        </div>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-tel-red-400 transition-colors flex-shrink-0"></i>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ======== ACTIVE LISTINGS ======== -->
+  <div class="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+    <div class="flex items-center gap-2 mb-4">
+      <div class="w-7 h-7 rounded-lg bg-tel-red-100 flex items-center justify-center">
+        <i data-lucide="store" class="w-4 h-4 text-tel-red-600"></i>
+      </div>
+      <h3 class="text-lg font-extrabold text-slate-800">My Active Listings</h3>
+      <span class="text-xs text-slate-400 ml-1">(Listing — Inheritance)</span>
+    </div>
+
+    {% if user_housing or user_items %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {% for h in user_housing %}
+      <div class="gs-card bg-slate-50 rounded-xl border border-slate-100 p-4 cursor-pointer">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-[10px] font-bold px-2 py-0.5 bg-tel-red-700 text-white rounded">HOUSING</span>
+          <span class="text-[10px] font-bold text-tel-red-700">₩{{ "{:,}".format(h.rent_price|int) }}/mo</span>
+        </div>
+        <h4 class="font-bold text-sm text-slate-800">{{ h.title }}</h4>
+        <p class="text-xs text-slate-500 mt-1 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3 text-tel-red-400"></i> {{ h.address }}</p>
+      </div>
+      {% endfor %}
+      {% for it in user_items %}
+      <div class="gs-card bg-slate-50 rounded-xl border border-slate-100 p-4 cursor-pointer">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-[10px] font-bold px-2 py-0.5 {{ it.badge_color }} text-white rounded">{{ it.badge }}</span>
+          <span class="text-[10px] font-bold text-slate-600">₩{{ "{:,}".format(it.item_price|int) }}</span>
+        </div>
+        <h4 class="font-bold text-sm text-slate-800">{{ it.title }}</h4>
+        <p class="text-xs text-slate-500 mt-1">{{ it.item_condition }} · {{ it.category }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-8">
+      <i data-lucide="package-open" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
+      <p class="text-sm font-semibold text-slate-500">No active listings</p>
+      <p class="text-xs text-slate-400 mt-1">Go to <a href="/marketplace" class="text-tel-red-600 underline">Marketplace</a> to create one.</p>
+    </div>
+    {% endif %}
+  </div>
+
+</section>
+{% endblock %}

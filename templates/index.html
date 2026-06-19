@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Buddy Finder{% endblock %}
+
+{% block content %}
+<section id="buddy-finder" class="anim-fade">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-3">
+    <div>
+      <div class="flex items-center gap-2.5 mb-1">
+        <div class="w-8 h-8 rounded-xl bg-tel-red-100 flex items-center justify-center">
+          <i data-lucide="heart-handshake" class="w-4 h-4 text-tel-red-600"></i>
+        </div>
+        <h2 class="text-2xl font-extrabold text-slate-800">Buddy Finder</h2>
+      </div>
+      <p class="text-sm text-slate-500 ml-[42px]">
+        Smart matches from your <span class="font-semibold text-tel-red-600">MatchProfile</span> — powered by compatibility scoring
+      </p>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3.5 py-1.5 rounded-full">
+        {{ buddies|length }} matches
+      </span>
+      <button class="p-2.5 rounded-xl bg-tel-red-50 hover:bg-tel-red-100 transition-colors cursor-pointer" title="Filter">
+        <i data-lucide="sliders-horizontal" class="w-4 h-4 text-tel-red-600"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Buddy Cards Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    {% for buddy in buddies %}
+    {% set score = buddy.match_profile.match_score %}
+    {% set circumference = 125.6 %}
+    {% set offset = circumference - (score / 100) * circumference %}
+    <div class="gs-card bg-white rounded-2xl border border-slate-100 p-5 relative overflow-hidden cursor-pointer">
+      <!-- Decorative corner -->
+      <div class="absolute top-0 right-0 w-28 h-28 bg-gradient-to-bl from-tel-red-50 to-transparent rounded-bl-full opacity-50"></div>
+
+      <div class="relative">
+        <!-- Avatar + Score -->
+        <div class="flex items-start justify-between mb-4">
+          <div class="relative">
+            <img src="{{ buddy.avatar_url }}" alt="{{ buddy.name }}"
+              class="w-14 h-14 rounded-2xl ring-2 ring-slate-100 bg-slate-50" />
+            <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-400 border-2 border-white rounded-full"></span>
+          </div>
+          <!-- Match Score Ring (MatchProfile.__match_score via getter) -->
+          <div class="match-ring relative flex items-center justify-center" title="Match Score: {{ score }}%">
+            <svg width="50" height="50" viewBox="0 0 48 48">
+              <circle cx="24" cy="24" r="20" fill="none" stroke="#e2e8f0" stroke-width="3"/>
+              <circle cx="24" cy="24" r="20" fill="none" stroke="url(#sg{{ loop.index }})" stroke-width="3"
+                stroke-dasharray="{{ circumference }}" stroke-dashoffset="{{ offset }}" stroke-linecap="round"/>
+              <defs>
+                <linearGradient id="sg{{ loop.index }}" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#b91c1c"/>
+                  <stop offset="100%" stop-color="#dc2626"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span class="absolute text-xs font-extrabold text-slate-700">{{ score }}%</span>
+          </div>
+        </div>
+
+        <!-- Info -->
+        <h3 class="font-bold text-slate-800 text-[15px]">{{ buddy.name }}</h3>
+        <p class="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
+          <i data-lucide="graduation-cap" class="w-3 h-3"></i> {{ buddy.target_university }}
+        </p>
+        <p class="text-[11px] text-tel-red-600 font-semibold mt-1 flex items-center gap-1">
+          <i data-lucide="map-pin" class="w-3 h-3"></i> {{ buddy.role }} · {{ buddy.major }}
+        </p>
+
+        <!-- Lifestyle Tags (from MatchProfile) -->
+        <div class="flex flex-wrap gap-1.5 mt-3">
+          {% for tag in buddy.match_profile.tags %}
+          <span class="gs-tag text-[10px] font-semibold px-2.5 py-1 rounded-full {{ tag.color }} border">
+            {{ tag.emoji }} {{ tag.label }}
+          </span>
+          {% endfor %}
+        </div>
+
+        <!-- Connect Button -->
+        <a href="/messages?chat={{ buddy.user_id }}" class="mt-4 w-full py-2.5 text-xs font-bold bg-gradient-to-r from-tel-red-600 to-tel-red-700 text-white rounded-xl hover:from-tel-red-700 hover:to-tel-red-800 transition-all shadow-sm hover:shadow-lg flex items-center justify-center gap-1.5 cursor-pointer no-underline">
+          <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> Connect
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
